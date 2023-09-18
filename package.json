@@ -4,13 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/server.js"
+    "start": "node ./src/server.js",
+    "dev": "nodemon ./src/server.js",
+    "lint": "eslint ./ --fix"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "module",
   "devDependencies": {
-    "eslint": "^8.20.0",
+    "eslint": "^8.49.0",
     "eslint-config-google": "^0.14.0",
     "nodemon": "^2.0.19"
   },

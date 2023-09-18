@@ -1,5 +1,5 @@
-const {nanoid} = require('nanoid');
-const {books, book} = require('./books');
+import {nanoid} from 'nanoid';
+import {book, books} from './books.js';
 
 const addBookHandler = (request, h) => {
   const {pageCount, readPage, name, publisher} = request.payload;
@@ -55,7 +55,7 @@ const getAllBoksHandler = (request, h) => {
   let bookIdFiltered = [];
 
   if (name != undefined) {
-    bookIdFiltered = book.filter((book)=>{
+    bookIdFiltered = book.filter((book) => {
       const str = book.name.toLowerCase();
       const param = name.toLowerCase();
 
@@ -93,7 +93,7 @@ const getAllBoksHandler = (request, h) => {
 
   if (name != undefined || reading != undefined || finished != undefined) {
     // console.log(bookIdFiltered);
-    const booksFiltered = books.filter((book)=> {
+    const booksFiltered = books.filter((book) => {
       const id = book.id;
       let result = undefined;
       bookIdFiltered.forEach((value) => id === value.id ? result = true : undefined);
@@ -105,7 +105,8 @@ const getAllBoksHandler = (request, h) => {
     const response = h.response({
       status: 'success',
       data: {
-        books: booksFiltered},
+        books: booksFiltered,
+      },
     });
     response.code(200);
     return response;
@@ -121,7 +122,7 @@ const getAllBoksHandler = (request, h) => {
 
 const getBookByIdHandler = (request, h) => {
   const {bookId} = request.params;
-  const data = book.filter((value)=> value.id == bookId)[0];
+  const data = book.filter((value) => value.id == bookId)[0];
   // console.log(data);
 
   if (data != undefined) {
@@ -222,4 +223,4 @@ const delBookByIdHandler = (request, h) => {
   response.code(404);
   return response;
 };
-module.exports = {addBookHandler, getAllBoksHandler, getBookByIdHandler, editBookByIdHandler, delBookByIdHandler};
+export {addBookHandler, getAllBoksHandler, getBookByIdHandler, editBookByIdHandler, delBookByIdHandler};
