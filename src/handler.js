@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
-import { book, books } from './books.js';
+import { books } from './books.js';
 
 const addBookHandler = (request, h) => {
-  const { pageCount, readPage, name, publisher } = request.payload;
+  const { pageCount, readPage, name } = request.payload;
 
   const bookId = nanoid(16);
   const id = bookId;
@@ -14,8 +14,7 @@ const addBookHandler = (request, h) => {
   const newBook = { ...request.payload, id, insertedAt, updatedAt, finished };
 
   if (isSuccess) {
-    book.push(newBook);
-    books.push({ id, name, publisher });
+    books.push(newBook);
 
     const response = h.response({
       'status': 'success',
@@ -47,6 +46,7 @@ const addBookHandler = (request, h) => {
     'message': 'Buku gagal ditambahkan',
   });
   response.code(500);
+  console.log(books);
   return response;
 };
 
@@ -55,7 +55,7 @@ const getAllBoksHandler = (request, h) => {
   let bookIdFiltered = [];
 
   if (name != undefined) {
-    bookIdFiltered = book.filter((book) => {
+    bookIdFiltered = books.filter((book) => {
       const str = book.name.toLowerCase();
       const param = name.toLowerCase();
 
@@ -63,7 +63,7 @@ const getAllBoksHandler = (request, h) => {
       return hasil;
     });
   };
-  let usedBookArray = bookIdFiltered.length !== 0 ? bookIdFiltered : book;
+  let usedBookArray = bookIdFiltered.length !== 0 ? bookIdFiltered : books;
 
   if (reading == 0) {
     bookIdFiltered = usedBookArray.filter((val) => {
@@ -81,7 +81,7 @@ const getAllBoksHandler = (request, h) => {
     });
   }
 
-  usedBookArray = bookIdFiltered.length !== 0 ? bookIdFiltered : book;
+  usedBookArray = bookIdFiltered.length !== 0 ? bookIdFiltered : books;
 
   if (finished == 0) {
     bookIdFiltered = usedBookArray.filter((val) => val.finished === false);
@@ -101,7 +101,11 @@ const getAllBoksHandler = (request, h) => {
     const response = h.response({
       status: 'success',
       data: {
-        books: booksFiltered,
+        books: booksFiltered.map(book => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher
+        })),
       },
     });
     response.code(200);
@@ -110,7 +114,13 @@ const getAllBoksHandler = (request, h) => {
 
   const response = h.response({
     status: 'success',
-    data: { books },
+    data: {
+      books: books.map(book => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher
+      }))
+    },
   });
   response.code(200);
   return response;
@@ -118,8 +128,7 @@ const getAllBoksHandler = (request, h) => {
 
 const getBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
-  const data = book.filter((value) => value.id == bookId)[0];
-  // console.log(data);
+  const data = books.filter((value) => value.id == bookId)[0];
 
   if (data != undefined) {
     const response = h.response({
@@ -152,7 +161,7 @@ const editBookByIdHandler = (request, h) => {
     publisher,
     reading,
   } = request.payload;
-  const index = book.findIndex((value) => value.id == bookId);
+  const index = books.findIndex((value) => value.id == bookId);
   // console.log(index);
 
   // const isSuccess =
@@ -179,8 +188,8 @@ const editBookByIdHandler = (request, h) => {
     return response;
   }
 
-  book[index] = {
-    ...book[index],
+  books[index] = {
+    ...books[index],
     name,
     year,
     author,
@@ -200,10 +209,10 @@ const editBookByIdHandler = (request, h) => {
 
 const delBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
-  const index = book.findIndex((value) => value.id === bookId);
+  const index = books.findIndex((value) => value.id === bookId);
 
   if (index !== -1) {
-    book.splice(index, 1);
+    books.splice(index, 1);
     const response = h.response({
       status: 'success',
       message: 'Buku berhasil dihapus',
